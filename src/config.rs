@@ -2700,6 +2700,34 @@ pub mod keys {
     // Connection punch-through options
     pub const OPTION_ENABLE_UDP_PUNCH: &str = "enable-udp-punch";
     pub const OPTION_ENABLE_IPV6_PUNCH: &str = "enable-ipv6-punch";
+    // Rollback switch for legacy behavior:
+    // when "Y", non-public rendezvous server defaults UDP/IPv6 punch to disabled if option is unset.
+    pub const OPTION_P2P_LEGACY_NON_PUBLIC_UDP_DEFAULT: &str =
+        "p2p-legacy-non-public-udp-default";
+    // UDP NAT mapped port readiness wait window in milliseconds.
+    // The runtime wait time is RTT/2 clamped by [min, max].
+    pub const OPTION_P2P_UDP_PORT_READY_MIN_MS: &str = "p2p-udp-port-ready-min-ms";
+    pub const OPTION_P2P_UDP_PORT_READY_MAX_MS: &str = "p2p-udp-port-ready-max-ms";
+    // Total direct path budget in milliseconds.
+    pub const OPTION_P2P_DIRECT_BUDGET_MS: &str = "p2p-direct-budget-ms";
+    // Absolute relay commit deadline from connect start in milliseconds.
+    pub const OPTION_P2P_RELAY_COMMIT_DEADLINE_MS: &str = "p2p-relay-commit-deadline-ms";
+    // UDP NAT probe packet budget.
+    pub const OPTION_P2P_UDP_BUDGET_PACKETS: &str = "p2p-udp-budget-packets";
+    // Easy symmetric NAT predictor window size.
+    pub const OPTION_P2P_EASYSYM_WINDOW: &str = "p2p-easysym-window";
+    // Hard symmetric NAT fast fallback deadline in milliseconds.
+    pub const OPTION_P2P_HARDSYM_FAST_FALLBACK_MS: &str = "p2p-hardsym-fast-fallback-ms";
+    // Path memory cache TTL in seconds.
+    pub const OPTION_P2P_PATH_CACHE_TTL_SEC: &str = "p2p-path-cache-ttl-sec";
+    // Master switch for connect orchestrator v2.
+    pub const OPTION_P2P_ORCHESTRATOR_V2: &str = "p2p-orchestrator-v2";
+    // Switch for NAT profile based strategy.
+    pub const OPTION_P2P_NAT_PROFILE_V2: &str = "p2p-nat-profile-v2";
+    // Switch for EasySym candidate strategy.
+    pub const OPTION_P2P_EASYSYM_V1: &str = "p2p-easysym-v1";
+    // Switch for path memory strategy.
+    pub const OPTION_P2P_PATH_MEMORY_V1: &str = "p2p-path-memory-v1";
     pub const OPTION_HIDE_USERNAME_ON_CARD: &str = "hide-username-on-card";
     pub const OPTION_HIDE_HELP_CARDS: &str = "hide-help-cards";
     pub const OPTION_DEFAULT_CONNECT_PASSWORD: &str = "default-connect-password";
@@ -2825,6 +2853,19 @@ pub mod keys {
         OPTION_VIDEO_SAVE_DIRECTORY,
         OPTION_ENABLE_UDP_PUNCH,
         OPTION_ENABLE_IPV6_PUNCH,
+        OPTION_P2P_LEGACY_NON_PUBLIC_UDP_DEFAULT,
+        OPTION_P2P_UDP_PORT_READY_MIN_MS,
+        OPTION_P2P_UDP_PORT_READY_MAX_MS,
+        OPTION_P2P_DIRECT_BUDGET_MS,
+        OPTION_P2P_RELAY_COMMIT_DEADLINE_MS,
+        OPTION_P2P_UDP_BUDGET_PACKETS,
+        OPTION_P2P_EASYSYM_WINDOW,
+        OPTION_P2P_HARDSYM_FAST_FALLBACK_MS,
+        OPTION_P2P_PATH_CACHE_TTL_SEC,
+        OPTION_P2P_ORCHESTRATOR_V2,
+        OPTION_P2P_NAT_PROFILE_V2,
+        OPTION_P2P_EASYSYM_V1,
+        OPTION_P2P_PATH_MEMORY_V1,
         OPTION_TOUCH_MODE,
         OPTION_SHOW_VIRTUAL_MOUSE,
         OPTION_SHOW_VIRTUAL_JOYSTICK,
