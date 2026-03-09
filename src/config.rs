@@ -2539,9 +2539,8 @@ pub fn is_disable_installation() -> bool {
     is_some_hard_opton("disable-installation")
 }
 
-// This function must be kept the same as the one in flutter and sciter code.
+// This function must be kept the same as the one in flutter code.
 // flutter: flutter/lib/common.dart -> option2bool()
-// sciter: Does not have the function, but it should be kept the same.
 pub fn option2bool(option: &str, value: &str) -> bool {
     if option.starts_with("enable-") {
         value != "N"
@@ -2702,8 +2701,7 @@ pub mod keys {
     pub const OPTION_ENABLE_IPV6_PUNCH: &str = "enable-ipv6-punch";
     // Rollback switch for legacy behavior:
     // when "Y", non-public rendezvous server defaults UDP/IPv6 punch to disabled if option is unset.
-    pub const OPTION_P2P_LEGACY_NON_PUBLIC_UDP_DEFAULT: &str =
-        "p2p-legacy-non-public-udp-default";
+    pub const OPTION_P2P_LEGACY_NON_PUBLIC_UDP_DEFAULT: &str = "p2p-legacy-non-public-udp-default";
     // UDP NAT mapped port readiness wait window in milliseconds.
     // The runtime wait time is RTT/2 clamped by [min, max].
     pub const OPTION_P2P_UDP_PORT_READY_MIN_MS: &str = "p2p-udp-port-ready-min-ms";
@@ -2768,10 +2766,12 @@ pub mod keys {
     pub const OPTION_KEEP_SCREEN_ON: &str = "keep-screen-on";
 
     // Server-side: keep host system awake during incoming sessions (Security setting)
-    pub const OPTION_KEEP_AWAKE_DURING_INCOMING_SESSIONS: &str = "keep-awake-during-incoming-sessions";
+    pub const OPTION_KEEP_AWAKE_DURING_INCOMING_SESSIONS: &str =
+        "keep-awake-during-incoming-sessions";
 
-    // Client-side: keep client system awake during outgoing sessions (General setting)  
-    pub const OPTION_KEEP_AWAKE_DURING_OUTGOING_SESSIONS: &str = "keep-awake-during-outgoing-sessions";
+    // Client-side: keep client system awake during outgoing sessions (General setting)
+    pub const OPTION_KEEP_AWAKE_DURING_OUTGOING_SESSIONS: &str =
+        "keep-awake-during-outgoing-sessions";
 
     pub const OPTION_DISABLE_GROUP_PANEL: &str = "disable-group-panel";
     pub const OPTION_DISABLE_DISCOVERY_PANEL: &str = "disable-discovery-panel";
