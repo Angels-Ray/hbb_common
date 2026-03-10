@@ -2708,6 +2708,8 @@ pub mod keys {
     pub const OPTION_P2P_UDP_PORT_READY_MAX_MS: &str = "p2p-udp-port-ready-max-ms";
     // Total direct path budget in milliseconds.
     pub const OPTION_P2P_DIRECT_BUDGET_MS: &str = "p2p-direct-budget-ms";
+    // Direct-path grace window before committing warmed relay in milliseconds.
+    pub const OPTION_P2P_DIRECT_GRACE_MS: &str = "p2p-direct-grace-ms";
     // Absolute relay commit deadline from connect start in milliseconds.
     pub const OPTION_P2P_RELAY_COMMIT_DEADLINE_MS: &str = "p2p-relay-commit-deadline-ms";
     // UDP NAT probe packet budget.
@@ -2718,6 +2720,8 @@ pub mod keys {
     pub const OPTION_P2P_HARDSYM_FAST_FALLBACK_MS: &str = "p2p-hardsym-fast-fallback-ms";
     // Path memory cache TTL in seconds.
     pub const OPTION_P2P_PATH_CACHE_TTL_SEC: &str = "p2p-path-cache-ttl-sec";
+    // Direct failure threshold for circuit breaker.
+    pub const OPTION_P2P_CIRCUIT_BREAK_FAILURES: &str = "p2p-circuit-break-failures";
     // Master switch for connect orchestrator v2.
     pub const OPTION_P2P_ORCHESTRATOR_V2: &str = "p2p-orchestrator-v2";
     // Switch for NAT profile based strategy.
