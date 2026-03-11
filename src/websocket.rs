@@ -20,7 +20,6 @@ use std::{
     time::Duration,
 };
 use tokio::{net::TcpStream, time::timeout};
-use tokio_native_tls::native_tls::TlsConnector;
 use tokio_tungstenite::{
     connect_async_tls_with_config, tungstenite::protocol::Message as WsMessage, Connector,
     MaybeTlsStream, WebSocketStream,
@@ -37,31 +36,28 @@ pub struct WsFramedStream {
 
 impl WsFramedStream {
     #[inline]
+    fn rustls_connector(danger_accept_invalid_certs: bool) -> ResultType<Option<Connector>> {
+        let connector = match crate::verifier::client_config(danger_accept_invalid_certs) {
+            Ok(client_config) => Some(Connector::Rustls(Arc::new(client_config))),
+            Err(e) => {
+                log::warn!(
+                    "Failed to get client config: {:?}, fallback to default connector",
+                    e
+                );
+                None
+            }
+        };
+        Ok(connector)
+    }
+
+    #[inline]
     fn get_connector(
         tls_type: &TlsType,
         danger_accept_invalid_certs: bool,
     ) -> ResultType<Option<Connector>> {
         match tls_type {
             TlsType::Plain => Ok(Some(Connector::Plain)),
-            TlsType::NativeTls => {
-                let connector = TlsConnector::builder()
-                    .danger_accept_invalid_certs(danger_accept_invalid_certs)
-                    .build()?;
-                Ok(Some(Connector::NativeTls(connector)))
-            }
-            TlsType::Rustls => {
-                let connector = match crate::verifier::client_config(danger_accept_invalid_certs) {
-                    Ok(client_config) => Some(Connector::Rustls(Arc::new(client_config))),
-                    Err(e) => {
-                        log::warn!(
-                            "Failed to get client config: {:?}, fallback to default connector",
-                            e
-                        );
-                        None
-                    }
-                };
-                Ok(connector)
-            }
+            TlsType::Rustls => Self::rustls_connector(danger_accept_invalid_certs),
         }
     }
 
@@ -131,35 +127,12 @@ impl WsFramedStream {
                 }
                 (TlsType::Rustls, false, Some(_)) => {
                     log::warn!(
-                        "WebSocket connection with rustls-tls failed, try native-tls: {}, {:?}",
+                        "WebSocket connection with rustls-tls failed, no native-tls fallback: {}, {:?}",
                         url,
                         e
                     );
-                    Self::try_connect(
-                        url,
-                        ms_timeout,
-                        TlsType::NativeTls,
-                        is_tls_type_cached,
-                        original_danger_accept_invalid_certs,
-                        original_danger_accept_invalid_certs,
-                    )
-                    .await
-                }
-                (TlsType::NativeTls, _, None) => {
-                    log::warn!(
-                            "WebSocket connection with native-tls failed, try accept invalid certs: {}, {:?}",
-                            url,
-                            e
-                        );
-                    Self::try_connect(
-                        url,
-                        ms_timeout,
-                        tls_type,
-                        is_tls_type_cached,
-                        Some(true),
-                        original_danger_accept_invalid_certs,
-                    )
-                    .await
+                    log::warn!("native-tls removed, abort: {}, {:?}", url, e);
+                    bail!(e)
                 }
                 _ => {
                     log::error!(
@@ -183,7 +156,6 @@ impl WsFramedStream {
         let stream = Self::connect(url.as_ref(), ms_timeout).await?;
         let addr = match stream.get_ref() {
             MaybeTlsStream::Plain(tcp) => tcp.peer_addr()?,
-            MaybeTlsStream::NativeTls(tls) => tls.get_ref().get_ref().get_ref().peer_addr()?,
             MaybeTlsStream::Rustls(tls) => tls.get_ref().0.peer_addr()?,
             _ => return Err(Error::new(ErrorKind::Other, "Unsupported stream type").into()),
         };
