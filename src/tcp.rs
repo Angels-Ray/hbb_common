@@ -79,7 +79,10 @@ pub(crate) fn new_socket(
         socket.set_reuseport(true).ok();
         socket.set_reuseaddr(true).ok();
     }
-    socket.bind(addr)?;
+    if let Err(e) = socket.bind(addr) {
+        log::debug!("tcp bind failed: local={}, reuse={}, err={}", addr, reuse, e);
+        return Err(e);
+    }
     Ok(socket)
 }
 
@@ -96,17 +99,33 @@ impl FramedStream {
                 crate::config::Config::get_any_listen_addr(remote_addr.is_ipv4())
             };
             if let Ok(socket) = new_socket(local, true) {
-                if let Ok(Ok(stream)) =
-                    super::timeout(ms_timeout, socket.connect(remote_addr)).await
-                {
-                    stream.set_nodelay(true).ok();
-                    let addr = stream.local_addr()?;
-                    return Ok(Self(
-                        Framed::new(DynTcpStream(Box::new(stream)), BytesCodec::new()),
-                        addr,
-                        None,
-                        0,
-                    ));
+                match super::timeout(ms_timeout, socket.connect(remote_addr)).await {
+                    Ok(Ok(stream)) => {
+                        stream.set_nodelay(true).ok();
+                        let addr = stream.local_addr()?;
+                        return Ok(Self(
+                            Framed::new(DynTcpStream(Box::new(stream)), BytesCodec::new()),
+                            addr,
+                            None,
+                            0,
+                        ));
+                    }
+                    Ok(Err(e)) => {
+                        log::debug!(
+                            "tcp connect failed: local={}, remote={}, err={}",
+                            local,
+                            remote_addr,
+                            e
+                        );
+                    }
+                    Err(e) => {
+                        log::debug!(
+                            "tcp connect timeout: local={}, remote={}, err={}",
+                            local,
+                            remote_addr,
+                            e
+                        );
+                    }
                 }
             }
         }

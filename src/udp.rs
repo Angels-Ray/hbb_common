@@ -41,7 +41,10 @@ fn new_socket(addr: SocketAddr, reuse: bool, buf_size: usize) -> Result<Socket, 
     if addr.is_ipv6() && addr.ip().is_unspecified() && addr.port() > 0 {
         socket.set_only_v6(false).ok();
     }
-    socket.bind(&addr.into())?;
+    if let Err(e) = socket.bind(&addr.into()) {
+        log::debug!("udp bind failed: local={}, reuse={}, err={}", addr, reuse, e);
+        return Err(e);
+    }
     Ok(socket)
 }
 
